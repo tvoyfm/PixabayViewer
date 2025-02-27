@@ -13,31 +13,25 @@ import Foundation
 final class SearchVM {
     // MARK: - Properties
 
-    /// Координатор, отвечающий за навигацию
     private let coordinator: SearchCoordinator
-    /// Сервис загрузки изображений, предоставляющий данные для отображения
     private let imageLoadingService: ImageLoadingServiceProtocol
     
-    /// Хранилище отменяемых подписок
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Publishers
     
-    /// Издатель состояния поиска, транслирующий обновления из сервиса загрузки изображений
     var state: PassthroughSubject<SearchState, Never> {
         return imageLoadingService.state
     }
     
     // MARK: - Public Properties
     
-    /// Массив пар данных изображений для отображения в UI
     var imageDataPairs: [ImageDataPair] {
         return convertToImageDataPairs(imageLoadingService.imagePairs)
     }
     
     // MARK: - Private Properties
     
-    /// Оригинальные пары изображений с данными из API
     private var imagePairs: [ImagePair] {
         return imageLoadingService.imagePairs
     }
@@ -49,7 +43,6 @@ final class SearchVM {
     init(coordinator: SearchCoordinator) {
         self.coordinator = coordinator
         
-        // Используем DI контейнер для получения сервиса или вызываем краш
         if let service = DIContainer.shared.resolve(type: ImageLoadingServiceProtocol.self) {
             self.imageLoadingService = service
         } else {

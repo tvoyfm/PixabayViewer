@@ -154,7 +154,11 @@ final class SearchCollectionViewCell: UICollectionViewCell {
             leftImageView.isHidden = false
             leftTagsLabel.isHidden = false
             leftTagsLabel.text = leftImage.tags
-            loadImage(from: leftImage.thumbnailURL, into: leftImageView, with: leftLoadingIndicator)
+            ImageLoader.shared.loadImage(
+                from: leftImage.thumbnailURL,
+                into: leftImageView,
+                with: leftLoadingIndicator
+            )
             leftImageURL = leftImage.thumbnailURL
         } else {
             leftImageView.isHidden = true
@@ -166,16 +170,16 @@ final class SearchCollectionViewCell: UICollectionViewCell {
             rightImageView.isHidden = false
             rightTagsLabel.isHidden = false
             rightTagsLabel.text = rightImage.tags
-            loadImage(from: rightImage.thumbnailURL, into: rightImageView, with: rightLoadingIndicator)
+            ImageLoader.shared.loadImage(
+                from: rightImage.thumbnailURL,
+                into: rightImageView,
+                with: rightLoadingIndicator
+            )
             rightImageURL = rightImage.thumbnailURL
         } else {
             rightImageView.isHidden = true
             rightTagsLabel.isHidden = true
         }
-    }
-
-    private func loadImage(from url: URL, into imageView: UIImageView, with indicator: UIActivityIndicatorView) {
-        ImageLoader.shared.loadImage(from: url, into: imageView, with: indicator)
     }
 
     @objc private func leftImageTapped() {

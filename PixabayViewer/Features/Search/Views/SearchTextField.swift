@@ -25,7 +25,6 @@ final class SearchTextField: UITextField {
     }
 
     private func setupTextField() {
-        placeholder = "Введите поисковый запрос"
         borderStyle = .roundedRect
         returnKeyType = .search
         clearButtonMode = .whileEditing
