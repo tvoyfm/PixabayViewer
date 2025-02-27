@@ -9,6 +9,7 @@ import UIKit
 
 final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
+    private var coordinator: SearchCoordinator?
 
     func scene(
         _ scene: UIScene,
@@ -18,8 +19,13 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         window = UIWindow(windowScene: windowScene)
-        let startVC = SearchVC()
-        window?.rootViewController = UINavigationController(rootViewController: startVC)
+        
+        let navigationController = UINavigationController()
+        window?.rootViewController = navigationController
+        
+        coordinator = PixabaySearchCoordinator(navigationController: navigationController)
+        coordinator?.start()
+        
         window?.makeKeyAndVisible()
     }
 }
