@@ -129,7 +129,7 @@ final class ImagePreviewVC: UIViewController {
     }
 
     private func setupBindings() {
-        viewModel.imageStatePublisher
+        viewModel.state
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
                 self?.handleImageState(state)

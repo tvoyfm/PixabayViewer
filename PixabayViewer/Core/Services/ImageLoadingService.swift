@@ -1,20 +1,25 @@
 import Combine
 import Foundation
 
+/// Протокол сервиса загрузки изображений
 protocol ImageLoadingServiceProtocol {
-    var statePublisher: PassthroughSubject<SearchState, Never> { get }
+    /// Издатель состояния поиска
+    var state: PassthroughSubject<SearchState, Never> { get }
+    
+    /// Текущие загруженные пары изображений
     var imagePairs: [ImagePair] { get }
-    var imageDataPairs: [ImageDataPair] { get }
-
+    
+    /// Обновляет поисковый текст
     func updateSearchText(_ text: String)
+    
+    /// Загружает дополнительные данные (следующую страницу)
     func loadMoreData()
-    func performSearch(query: String)
 }
 
 final class ImageLoadingService: ImageLoadingServiceProtocol {
     // MARK: - Publishers
 
-    let statePublisher = PassthroughSubject<SearchState, Never>()
+    let state = PassthroughSubject<SearchState, Never>()
 
     // MARK: - Properties
 
@@ -30,7 +35,6 @@ final class ImageLoadingService: ImageLoadingServiceProtocol {
     private let debounceInterval: TimeInterval = 0.7
 
     private(set) var imagePairs: [ImagePair] = []
-    private(set) var imageDataPairs: [ImageDataPair] = []
 
     // MARK: - Initialization
 
@@ -39,7 +43,7 @@ final class ImageLoadingService: ImageLoadingServiceProtocol {
         setupSearchTextDebounce()
 
         // Инициируем пустое состояние
-        statePublisher.send(.empty)
+        state.send(.empty)
     }
 
     // MARK: - Private Methods
@@ -50,7 +54,6 @@ final class ImageLoadingService: ImageLoadingServiceProtocol {
             .removeDuplicates()
             .sink { [weak self] searchText in
                 guard let self = self else { return }
-                // Выполняем синхронный поиск - так гарантируем, что при смене searchText всегда будет запрос
                 self.performSearch(query: searchText)
             }
             .store(in: &cancellables)
@@ -88,15 +91,14 @@ final class ImageLoadingService: ImageLoadingServiceProtocol {
         loadData(page: nextPage)
     }
 
-    func performSearch(query: String) {
+    private func performSearch(query: String) {
         // Сбрасываем пагинацию при новом поиске
         resetPagination()
         imagePairs = []
-        imageDataPairs = []
 
         // Проверка пустого запроса
         if query.isEmpty {
-            statePublisher.send(.empty)
+            state.send(.empty)
             return
         }
 
@@ -107,7 +109,7 @@ final class ImageLoadingService: ImageLoadingServiceProtocol {
         guard !isLoading else { return }
 
         isLoading = true
-        statePublisher.send(.loading(isFirstPage: page == 1))
+        state.send(.loading(isFirstPage: page == 1))
 
         Task {
             do {
@@ -123,56 +125,31 @@ final class ImageLoadingService: ImageLoadingServiceProtocol {
                         setHasMorePages(false)
 
                         if page == 1 {
-                            statePublisher.send(.noResults)
+                            state.send(.noResults)
                         } else {
-                            statePublisher.send(.loaded(isFirstPage: false))
+                            state.send(.loaded(isFirstPage: false))
                         }
                     } else {
                         if page == 1 {
                             imagePairs = newImagePairs
-                            imageDataPairs = convertToImageDataPairs(newImagePairs)
                         } else {
                             imagePairs.append(contentsOf: newImagePairs)
-                            imageDataPairs.append(contentsOf: convertToImageDataPairs(newImagePairs))
                         }
 
-                        statePublisher.send(.loaded(isFirstPage: page == 1))
+                        state.send(.loaded(isFirstPage: page == 1))
                     }
                 }
             } catch let error as SearchError {
                 await MainActor.run {
                     isLoading = false
-                    statePublisher.send(.error(error))
+                    state.send(.error(error))
                 }
             } catch {
                 await MainActor.run {
                     isLoading = false
-                    statePublisher.send(.error(.unknown))
+                    state.send(.error(.unknown))
                 }
             }
-        }
-    }
-
-    private func convertToImageDataPairs(_ imagePairs: [ImagePair]) -> [ImageDataPair] {
-        return imagePairs.map { pair in
-            let leftImage = ImageData(
-                tags: pair.regularImage.tags,
-                thumbnailURL: pair.regularImage.webformatURL,
-                fullSizeURL: pair.regularImage.largeImageURL
-            )
-
-            let rightImage: ImageData?
-            if let graffitiImage = pair.graffitiImage {
-                rightImage = ImageData(
-                    tags: graffitiImage.tags,
-                    thumbnailURL: graffitiImage.webformatURL,
-                    fullSizeURL: graffitiImage.largeImageURL
-                )
-            } else {
-                rightImage = nil
-            }
-
-            return ImageDataPair(leftImage: leftImage, rightImage: rightImage)
         }
     }
 }

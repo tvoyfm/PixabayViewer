@@ -16,7 +16,7 @@ final class ImagePreviewVM {
     private var currentIndex: Int // 0 для обычного изображения, 1 для граффити
     private let imageLoader: ImageLoader
 
-    let imageStatePublisher = PassthroughSubject<ImagePreviewState, Never>()
+    let state = PassthroughSubject<ImagePreviewState, Never>()
 
     var hasGraffitiImage: Bool {
         return imagePair.graffitiImage != nil
@@ -49,19 +49,19 @@ final class ImagePreviewVM {
 
     func loadCurrentImage() {
         guard let imageURL = currentLargeImageURL else {
-            imageStatePublisher.send(.failure)
+            state.send(.failure)
             return
         }
 
-        imageStatePublisher.send(.loading)
+        state.send(.loading)
 
         imageLoader.loadImage(from: imageURL) { [weak self] image in
             guard let self = self else { return }
 
             if let image = image {
-                self.imageStatePublisher.send(.loaded(image: image))
+                self.state.send(.loaded(image: image))
             } else {
-                self.imageStatePublisher.send(.failure)
+                self.state.send(.failure)
             }
         }
     }

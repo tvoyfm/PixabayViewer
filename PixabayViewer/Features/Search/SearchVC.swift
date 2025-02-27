@@ -75,7 +75,7 @@ final class SearchVC: UIViewController {
     // MARK: - ViewModel Binding
 
     private func setupBindings() {
-        viewModel.statePublisher
+        viewModel.state
             .receive(on: DispatchQueue.main)
             .sink { [weak self] state in
                 self?.handleState(state)
@@ -86,43 +86,90 @@ final class SearchVC: UIViewController {
     private func handleState(_ state: SearchState) {
         switch state {
         case .empty:
-            searchCollectionView.setImagePairs([])
-            searchCollectionView.showMessage(LocalizationKeys.Search.emptyState.localized, type: .empty)
-
-        case let .loading(isFirstPage):
-            searchCollectionView.hideMessage()
-            if isFirstPage {
-                searchCollectionView.startLoading()
-                searchCollectionView.setImagePairs([])
-            }
-
-        case let .loaded(isFirstPage):
-            searchCollectionView.hideMessage()
-            searchCollectionView.stopLoading()
-
-            if isFirstPage {
-                searchCollectionView.setImagePairs(viewModel.imageDataPairs)
-            } else if viewModel.imageDataPairs.count > searchCollectionView.imagePairs.count {
-                let newItems = Array(viewModel.imageDataPairs.suffix(
-                    viewModel.imageDataPairs.count - searchCollectionView.imagePairs.count
-                ))
-                searchCollectionView.appendImagePairs(newItems)
-            }
-
+            handleEmptyState()
+        case .loading(let isFirstPage):
+            handleLoadingState(isFirstPage: isFirstPage)
+        case .loaded(let isFirstPage):
+            handleLoadedState(isFirstPage: isFirstPage)
         case .noResults:
-            searchCollectionView.stopLoading()
-            searchCollectionView.showMessage(LocalizationKeys.Search.noResults.localized, type: .info)
-
-        case let .error(error):
-            searchCollectionView.stopLoading()
-            searchCollectionView.showMessage(error.message, type: .error)
+            handleNoResultsState()
+        case .error(let error):
+            handleErrorState(error: error)
         }
+    }
+    
+    // MARK: - Обработка состояний
+    
+    /// Обрабатывает пустое состояние (когда нет поискового запроса)
+    private func handleEmptyState() {
+        searchCollectionView.setImagePairs([])
+        searchCollectionView.showMessage(LocalizationKeys.Search.emptyState.localized, type: .empty)
+    }
+    
+    /// Обрабатывает состояние загрузки
+    /// - Parameter isFirstPage: Флаг, указывающий на загрузку первой страницы
+    private func handleLoadingState(isFirstPage: Bool) {
+        searchCollectionView.hideMessage()
+        
+        if isFirstPage {
+            searchCollectionView.startLoading()
+            searchCollectionView.setImagePairs([])
+        }
+    }
+    
+    /// Обрабатывает состояние успешной загрузки
+    /// - Parameter isFirstPage: Флаг, указывающий на загрузку первой страницы
+    private func handleLoadedState(isFirstPage: Bool) {
+        searchCollectionView.hideMessage()
+        searchCollectionView.stopLoading()
+        
+        updateCollectionViewWithNewData(isFirstPage: isFirstPage)
+    }
+    
+    /// Обновляет коллекцию новыми данными, либо полностью обновляя её, либо добавляя новые элементы
+    /// - Parameter isFirstPage: Флаг, указывающий на загрузку первой страницы
+    private func updateCollectionViewWithNewData(isFirstPage: Bool) {
+        if isFirstPage {
+            // Для первой страницы полностью обновляем коллекцию
+            searchCollectionView.setImagePairs(viewModel.imageDataPairs)
+        } else {
+            // Для последующих страниц добавляем только новые элементы
+            appendNewItemsToCollectionIfNeeded()
+        }
+    }
+    
+    /// Добавляет новые элементы в коллекцию, если их количество в ViewModel больше, чем в коллекции
+    private func appendNewItemsToCollectionIfNeeded() {
+        let existingCount = searchCollectionView.imagePairs.count
+        let totalCount = viewModel.imageDataPairs.count
+        
+        if totalCount > existingCount {
+            let newItems = Array(viewModel.imageDataPairs.suffix(totalCount - existingCount))
+            searchCollectionView.appendImagePairs(newItems)
+        }
+    }
+    
+    /// Обрабатывает состояние отсутствия результатов поиска
+    private func handleNoResultsState() {
+        searchCollectionView.stopLoading()
+        searchCollectionView.showMessage(LocalizationKeys.Search.noResults.localized, type: .info)
+    }
+    
+    /// Обрабатывает состояние ошибки
+    /// - Parameter error: Ошибка, которую нужно отобразить
+    private func handleErrorState(error: SearchError) {
+        searchCollectionView.stopLoading()
+        searchCollectionView.showMessage(error.message, type: .error)
     }
 }
 
 // MARK: - SearchTextFieldDelegate
 
 extension SearchVC: SearchTextFieldDelegate {
+    /// Вызывается при обновлении текста в поисковом поле
+    /// - Parameters:
+    ///   - textField: Поисковое поле, в котором произошло обновление
+    ///   - text: Новый текст поискового запроса
     func searchTextField(_ textField: SearchTextField, didUpdateSearchText text: String) {
         viewModel.updateSearchText(text)
     }
@@ -131,10 +178,17 @@ extension SearchVC: SearchTextFieldDelegate {
 // MARK: - SearchCollectionViewDelegate
 
 extension SearchVC: SearchCollectionViewDelegate {
+    /// Вызывается при выборе элемента в коллекции
+    /// - Parameters:
+    ///   - collectionView: Коллекция, в которой произошел выбор
+    ///   - indexPath: Индекс выбранного элемента
+    ///   - isLeftImage: Флаг, указывающий на выбор обычного (true) или граффити (false) изображения
     func collectionView(_ collectionView: SearchCollectionView, didSelectItemAt indexPath: IndexPath, isLeftImage: Bool) {
         viewModel.showImagePreview(itemAt: indexPath, isLeftImage: isLeftImage)
     }
 
+    /// Вызывается, когда пользователь прокрутил до конца коллекции и требуется загрузить больше данных
+    /// - Parameter collectionView: Коллекция, в которой произошла прокрутка до конца
     func collectionViewDidReachEnd(_ collectionView: SearchCollectionView) {
         viewModel.loadMoreData()
     }
