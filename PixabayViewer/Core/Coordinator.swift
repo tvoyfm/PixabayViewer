@@ -24,12 +24,14 @@ final class PixabaySearchCoordinator: SearchCoordinator {
     }
     
     func start() {
-        let searchVC = SearchVC(coordinator: self)
+        let searchVM = SearchVM(coordinator: self)
+        let searchVC = SearchVC(viewModel: searchVM)
         navigationController.pushViewController(searchVC, animated: false)
     }
     
     func showImagePreview(for imagePair: ImagePair, selectedIndex: Int) {
-        let previewVC = ImagePreviewVC(imagePair: imagePair, selectedIndex: selectedIndex)
+        let previewVM = ImagePreviewVM(imagePair: imagePair, selectedIndex: selectedIndex)
+        let previewVC = ImagePreviewVC(viewModel: previewVM)
         navigationController.present(previewVC, animated: true)
     }
 } 

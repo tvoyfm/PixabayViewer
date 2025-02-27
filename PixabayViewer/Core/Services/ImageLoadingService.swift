@@ -34,7 +34,7 @@ final class ImageLoadingService: ImageLoadingServiceProtocol {
     
     // MARK: - Initialization
     
-    init(searchProvider: SearchProvider = PixabaySearchProvider()) {
+    init(searchProvider: SearchProvider) {
         self.searchProvider = searchProvider
         setupSearchTextDebounce()
         

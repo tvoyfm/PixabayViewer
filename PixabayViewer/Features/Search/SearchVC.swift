@@ -33,8 +33,8 @@ final class SearchVC: UIViewController {
 
     // MARK: - Initialization
     
-    init(coordinator: SearchCoordinator) {
-        self.viewModel = SearchVM(coordinator: coordinator)
+    init(viewModel: SearchVM) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     

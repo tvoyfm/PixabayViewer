@@ -14,6 +14,7 @@ final class ImagePreviewVM {
 
     private let imagePair: ImagePair
     private var currentIndex: Int // 0 для обычного изображения, 1 для граффити
+    private let imageLoader: ImageLoader
     
     let imageStatePublisher = PassthroughSubject<ImagePreviewState, Never>()
 
@@ -35,6 +36,13 @@ final class ImagePreviewVM {
         self.imagePair = imagePair
         // Если выбрано граффити-изображение (индекс 1), но его нет, переключаемся на обычное (индекс 0)
         self.currentIndex = (selectedIndex == 1 && imagePair.graffitiImage == nil) ? 0 : selectedIndex
+        
+        // Получаем ImageLoader из DI или используем созданный по умолчанию
+        if let loader = DIContainer.shared.resolve(type: ImageLoader.self) {
+            self.imageLoader = loader
+        } else {
+            fatalError("ImageLoader не зарегистрирован в DI контейнере")
+        }
     }
 
     // MARK: - Public Methods
@@ -47,7 +55,7 @@ final class ImagePreviewVM {
 
         imageStatePublisher.send(.loading)
         
-        ImageLoader.shared.loadImage(from: imageURL) { [weak self] image in
+        imageLoader.loadImage(from: imageURL) { [weak self] image in
             guard let self = self else { return }
             
             if let image = image {

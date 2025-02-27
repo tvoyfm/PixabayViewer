@@ -61,8 +61,8 @@ final class ImagePreviewVC: UIViewController {
 
     // MARK: - Initialization
 
-    init(imagePair: ImagePair, selectedIndex: Int) {
-        self.viewModel = ImagePreviewVM(imagePair: imagePair, selectedIndex: selectedIndex)
+    init(viewModel: ImagePreviewVM) {
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .fullScreen
         modalTransitionStyle = .crossDissolve

@@ -16,6 +16,29 @@ final class DependencyRegistration {
     
     /// Регистрирует сервисы
     private static func registerServices(in container: DIContainer) {
+        // Синглтоны
+        registerSingletons(in: container)
+        
+        // Регистрируем SearchService
+        container.register(type: SearchService.self) {
+            return PixabaySearchService()
+        }
+        
+        // Регистрируем SearchProvider, зависит от SearchService
+        container.register(type: SearchProvider.self) {
+            let searchService = container.resolve(type: SearchService.self)!
+            return PixabaySearchProvider(searchService: searchService)
+        }
+        
+        // Регистрируем ImageLoadingServiceProtocol, зависит от SearchProvider
+        container.register(type: ImageLoadingServiceProtocol.self) {
+            let searchProvider = container.resolve(type: SearchProvider.self)!
+            return ImageLoadingService(searchProvider: searchProvider)
+        }
+    }
+    
+    /// Регистрирует синглтоны
+    private static func registerSingletons(in container: DIContainer) {
         // Регистрируем ImageCache как синглтон
         container.registerSingleton(type: ImageCache.self) {
             return ImageCache.shared
@@ -24,17 +47,6 @@ final class DependencyRegistration {
         // Регистрируем ImageLoader как синглтон
         container.registerSingleton(type: ImageLoader.self) {
             return ImageLoader.shared
-        }
-        
-        // Регистрируем SearchProvider
-        container.register(type: SearchProvider.self) {
-            return PixabaySearchProvider()
-        }
-        
-        // Регистрируем ImageLoadingServiceProtocol
-        container.register(type: ImageLoadingServiceProtocol.self) {
-            let searchProvider = container.resolve(type: SearchProvider.self)!
-            return ImageLoadingService(searchProvider: searchProvider)
         }
     }
     

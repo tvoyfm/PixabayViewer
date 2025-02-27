@@ -20,7 +20,7 @@ final class PixabaySearchProvider: SearchProvider {
     private let searchService: SearchService
     private let imagesPerPage = 10
     
-    init(searchService: SearchService = PixabaySearchService()) {
+    init(searchService: SearchService) {
         self.searchService = searchService
     }
     
