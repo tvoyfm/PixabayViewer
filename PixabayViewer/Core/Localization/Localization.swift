@@ -4,9 +4,9 @@ import Foundation
 final class Localization {
     /// Синглтон для глобального доступа к локализации
     static let shared = Localization()
-    
+
     private init() {}
-    
+
     /// Получает локализованную строку по ключу
     /// - Parameters:
     ///   - key: Ключ для локализации
@@ -24,12 +24,12 @@ extension String {
     var localized: String {
         return Localization.shared.localized(self)
     }
-    
+
     /// Локализует строку с заданными аргументами
     /// - Parameter arguments: Аргументы для форматирования строки
     /// - Returns: Локализованная и отформатированная строка
     func localized(with arguments: CVarArg...) -> String {
-        let localizedString = self.localized
+        let localizedString = localized
         return String(format: localizedString, arguments: arguments)
     }
-} 
+}

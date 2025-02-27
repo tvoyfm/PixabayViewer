@@ -4,15 +4,15 @@ import Foundation
 final class DIContainer {
     /// Синглтон для глобального доступа к контейнеру
     static let shared = DIContainer()
-    
+
     /// Хранилище зарегистрированных фабрик
     private var factories: [String: Any] = [:]
-    
+
     /// Хранилище синглтонов
     private var singletons: [String: Any] = [:]
-    
+
     private init() {}
-    
+
     /// Регистрирует фабрику для создания объектов
     /// - Parameters:
     ///   - type: Тип регистрируемого объекта
@@ -21,7 +21,7 @@ final class DIContainer {
         let key = String(describing: type)
         factories[key] = factory
     }
-    
+
     /// Регистрирует синглтон
     /// - Parameters:
     ///   - type: Тип регистрируемого синглтона
@@ -31,23 +31,23 @@ final class DIContainer {
         let instance = factory()
         singletons[key] = instance
     }
-    
+
     /// Получает зарегистрированный экземпляр
     /// - Parameter type: Тип объекта для получения
     /// - Returns: Экземпляр запрошенного типа или nil, если тип не зарегистрирован
     func resolve<T>(type: T.Type) -> T? {
         let key = String(describing: type)
-        
+
         // Сначала проверяем среди синглтонов
         if let instance = singletons[key] as? T {
             return instance
         }
-        
+
         // Затем проверяем среди фабрик
         if let factory = factories[key] as? () -> T {
             return factory()
         }
-        
+
         return nil
     }
 }
@@ -56,4 +56,4 @@ final class DIContainer {
 protocol DIRegistrable {
     /// Регистрирует все зависимости объекта в контейнере
     static func registerDependencies(in container: DIContainer)
-} 
+}

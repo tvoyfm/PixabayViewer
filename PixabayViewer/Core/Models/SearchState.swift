@@ -7,4 +7,4 @@ enum SearchState {
     case loaded(isFirstPage: Bool)
     case noResults
     case error(SearchError)
-} 
+}

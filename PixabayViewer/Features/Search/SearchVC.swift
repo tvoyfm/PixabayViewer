@@ -32,12 +32,12 @@ final class SearchVC: UIViewController {
     }()
 
     // MARK: - Initialization
-    
+
     init(viewModel: SearchVM) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -68,7 +68,7 @@ final class SearchVC: UIViewController {
             searchCollectionView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 8),
             searchCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             searchCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            searchCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            searchCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
 
@@ -89,14 +89,14 @@ final class SearchVC: UIViewController {
             searchCollectionView.setImagePairs([])
             searchCollectionView.showMessage(LocalizationKeys.Search.emptyState.localized, type: .empty)
 
-        case .loading(let isFirstPage):
+        case let .loading(isFirstPage):
             searchCollectionView.hideMessage()
             if isFirstPage {
                 searchCollectionView.startLoading()
                 searchCollectionView.setImagePairs([])
             }
 
-        case .loaded(let isFirstPage):
+        case let .loaded(isFirstPage):
             searchCollectionView.hideMessage()
             searchCollectionView.stopLoading()
 
@@ -113,7 +113,7 @@ final class SearchVC: UIViewController {
             searchCollectionView.stopLoading()
             searchCollectionView.showMessage(LocalizationKeys.Search.noResults.localized, type: .info)
 
-        case .error(let error):
+        case let .error(error):
             searchCollectionView.stopLoading()
             searchCollectionView.showMessage(error.message, type: .error)
         }

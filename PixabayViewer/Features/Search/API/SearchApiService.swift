@@ -29,7 +29,7 @@ final class PixabayApiService: SearchApiService {
             URLQueryItem(name: "key", value: apiKey),
             URLQueryItem(name: "q", value: query),
             URLQueryItem(name: "page", value: "\(page)"),
-            URLQueryItem(name: "per_page", value: "\(perPage)")
+            URLQueryItem(name: "per_page", value: "\(perPage)"),
         ]
 
         guard let url = components.url else {
@@ -43,7 +43,7 @@ final class PixabayApiService: SearchApiService {
                 throw SearchApiError.unknown
             }
 
-            guard (200...299).contains(httpResponse.statusCode) else {
+            guard (200 ... 299).contains(httpResponse.statusCode) else {
                 throw SearchApiError.serverError(httpResponse.statusCode)
             }
 

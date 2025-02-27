@@ -4,7 +4,7 @@ import UIKit
 
 protocol Coordinator: AnyObject {
     var navigationController: UINavigationController { get }
-    
+
     func start()
 }
 
@@ -18,20 +18,20 @@ protocol SearchCoordinator: Coordinator {
 
 final class PixabaySearchCoordinator: SearchCoordinator {
     let navigationController: UINavigationController
-    
+
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
     }
-    
+
     func start() {
         let searchVM = SearchVM(coordinator: self)
         let searchVC = SearchVC(viewModel: searchVM)
         navigationController.pushViewController(searchVC, animated: false)
     }
-    
+
     func showImagePreview(for imagePair: ImagePair, selectedIndex: Int) {
         let previewVM = ImagePreviewVM(imagePair: imagePair, selectedIndex: selectedIndex)
         let previewVC = ImagePreviewVC(viewModel: previewVM)
         navigationController.present(previewVC, animated: true)
     }
-} 
+}

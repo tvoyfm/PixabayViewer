@@ -80,7 +80,7 @@ final class SearchCollectionView: UIView {
             messageView.centerYAnchor.constraint(equalTo: centerYAnchor),
             messageView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 20),
             messageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
-            messageView.heightAnchor.constraint(equalToConstant: 150)
+            messageView.heightAnchor.constraint(equalToConstant: 150),
         ])
     }
 
@@ -103,7 +103,7 @@ final class SearchCollectionView: UIView {
     func showMessage(_ message: String, type: MessageType) {
         messageView.show(message: message, type: type)
     }
-    
+
     func hideMessage() {
         messageView.hide()
     }
