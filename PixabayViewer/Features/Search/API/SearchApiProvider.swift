@@ -15,7 +15,7 @@ protocol SearchApiProvider {
 final class PixabayApiProvider: SearchApiProvider {
     private let apiService: SearchApiService
 
-    init(apiService: SearchApiService = PixabayApiService()) {
+    init(apiService: SearchApiService) {
         self.apiService = apiService
     }
 

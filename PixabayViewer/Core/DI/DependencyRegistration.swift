@@ -18,18 +18,29 @@ final class DependencyRegistration {
         // Синглтоны
         registerSingletons(in: container)
 
-        // Регистрируем SearchService
-        container.register(type: SearchService.self) {
-            PixabaySearchService()
+        container.register(type: SearchApiService.self) {
+            return PixabayApiService()
         }
 
-        // Регистрируем SearchProvider, зависит от SearchService
+        // SearchApiProvider зависит от SearchApiService
+        container.register(type: SearchApiProvider.self) {
+            let searchApiService = container.resolve(type: SearchApiService.self)!
+            return PixabayApiProvider(apiService: searchApiService)
+        }
+
+        // SearchService зависит от SearchApiProvider
+        container.register(type: SearchService.self) {
+            let searchApiProvider = container.resolve(type: SearchApiProvider.self)!
+            return PixabaySearchService(apiProvider: searchApiProvider)
+        }
+
+        // SearchProvider зависит от SearchService
         container.register(type: SearchProvider.self) {
             let searchService = container.resolve(type: SearchService.self)!
             return PixabaySearchProvider(searchService: searchService)
         }
 
-        // Регистрируем ImageLoadingServiceProtocol, зависит от SearchProvider
+        // ImageLoadingServiceProtocol зависит от SearchProvider
         container.register(type: ImageLoadingServiceProtocol.self) {
             let searchProvider = container.resolve(type: SearchProvider.self)!
             return ImageLoadingService(searchProvider: searchProvider)
