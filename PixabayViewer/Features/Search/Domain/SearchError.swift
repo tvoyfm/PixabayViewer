@@ -17,15 +17,15 @@ enum SearchError: Error {
     var message: String {
         switch self {
         case .invalidQuery:
-            return "Некорректный запрос"
+            return LocalizationKeys.Errors.invalidQuery.localized
         case .networkError:
-            return "Ошибка сети. Проверьте подключение к интернету"
+            return LocalizationKeys.Errors.networkError.localized
         case .serverError:
-            return "Ошибка сервера. Попробуйте позже"
+            return LocalizationKeys.Errors.serverError.localized
         case .noResults:
-            return "Ничего не найдено по вашему запросу"
+            return LocalizationKeys.Search.noResults.localized
         case .unknown:
-            return "Произошла неизвестная ошибка"
+            return LocalizationKeys.Errors.generalError.localized
         }
     }
 }

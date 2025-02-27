@@ -1,0 +1,29 @@
+/* 
+  Localizable.strings
+  PixabayViewer
+*/
+
+// MARK: - Общие строки
+"common.ok" = "ОК";
+"common.cancel" = "Отмена";
+"common.error" = "Ошибка";
+"common.retry" = "Повторить";
+"common.loading" = "Загрузка...";
+
+// MARK: - Экран поиска
+"search.title" = "Pixabay Изображения";
+"search.placeholder" = "Введите текст для поиска...";
+"search.empty_state" = "Введите текст в поле поиска для отображения изображений";
+"search.no_results" = "Ничего не найдено по вашему запросу";
+
+// MARK: - Экран предпросмотра изображения
+"image_preview.title" = "Просмотр изображения";
+"image_preview.image_info" = "Информация об изображении";
+"image_preview.tags" = "Теги: %@";
+
+// MARK: - Ошибки
+"errors.network_error" = "Ошибка сети. Проверьте подключение к интернету";
+"errors.server_error" = "Ошибка сервера. Попробуйте позже";
+"errors.general_error" = "Что-то пошло не так. Попробуйте позже";
+"errors.image_load_error" = "Не удалось загрузить изображение";
+"errors.invalid_query" = "Некорректный запрос"; 

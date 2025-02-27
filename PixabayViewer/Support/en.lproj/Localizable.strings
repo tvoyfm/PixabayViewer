@@ -1,0 +1,29 @@
+/* 
+  Localizable.strings
+  PixabayViewer
+*/
+
+// MARK: - Common strings
+"common.ok" = "OK";
+"common.cancel" = "Cancel";
+"common.error" = "Error";
+"common.retry" = "Retry";
+"common.loading" = "Loading...";
+
+// MARK: - Search screen
+"search.title" = "Pixabay Images";
+"search.placeholder" = "Enter text to search...";
+"search.empty_state" = "Enter text in the search field to display images";
+"search.no_results" = "No results found for your query";
+
+// MARK: - Image preview screen
+"image_preview.title" = "Image Preview";
+"image_preview.image_info" = "Image Information";
+"image_preview.tags" = "Tags: %@";
+
+// MARK: - Errors
+"errors.network_error" = "Network error. Please check your internet connection";
+"errors.server_error" = "Server error. Please try again later";
+"errors.general_error" = "Something went wrong. Please try again later";
+"errors.image_load_error" = "Failed to load image";
+"errors.invalid_query" = "Invalid query"; 

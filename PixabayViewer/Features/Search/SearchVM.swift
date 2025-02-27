@@ -33,10 +33,16 @@ final class SearchVM {
 
     init(
         coordinator: SearchCoordinator,
-        imageLoadingService: ImageLoadingServiceProtocol = ImageLoadingService()
+        imageLoadingService: ImageLoadingServiceProtocol? = nil
     ) {
         self.coordinator = coordinator
-        self.imageLoadingService = imageLoadingService
+        
+        // Используем DI контейнер для получения сервиса или вызываем краш
+        if let service = imageLoadingService ?? DIContainer.shared.resolve(type: ImageLoadingServiceProtocol.self) {
+            self.imageLoadingService = service
+        } else {
+            fatalError("ImageLoadingServiceProtocol не зарегистрирован в DI контейнере")
+        }
     }
 
     // MARK: - Public Methods

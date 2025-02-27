@@ -20,6 +20,7 @@ final class SearchVC: UIViewController {
         let textField = SearchTextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.searchDelegate = self
+        textField.placeholder = LocalizationKeys.Search.placeholder.localized
         return textField
     }()
 
@@ -52,7 +53,7 @@ final class SearchVC: UIViewController {
     // MARK: - UI Setup
 
     private func setupUI() {
-        title = "Pixabay Images"
+        title = LocalizationKeys.Search.title.localized
         view.backgroundColor = .systemBackground
 
         view.addSubview(searchTextField)
@@ -86,13 +87,12 @@ final class SearchVC: UIViewController {
         switch state {
         case .empty:
             searchCollectionView.setImagePairs([])
-            searchCollectionView.showMessage("Введите текст в поле поиска для отображения изображений", type: .empty)
+            searchCollectionView.showMessage(LocalizationKeys.Search.emptyState.localized, type: .empty)
 
         case .loading(let isFirstPage):
             searchCollectionView.hideMessage()
             if isFirstPage {
                 searchCollectionView.startLoading()
-                // Очищаем коллекцию при начале нового поиска
                 searchCollectionView.setImagePairs([])
             }
 
@@ -101,10 +101,8 @@ final class SearchVC: UIViewController {
             searchCollectionView.stopLoading()
 
             if isFirstPage {
-                // Для первой страницы всегда полностью обновляем данные
                 searchCollectionView.setImagePairs(viewModel.imageDataPairs)
             } else if viewModel.imageDataPairs.count > searchCollectionView.imagePairs.count {
-                // Для последующих страниц добавляем только новые элементы
                 let newItems = Array(viewModel.imageDataPairs.suffix(
                     viewModel.imageDataPairs.count - searchCollectionView.imagePairs.count
                 ))
@@ -113,7 +111,7 @@ final class SearchVC: UIViewController {
 
         case .noResults:
             searchCollectionView.stopLoading()
-            searchCollectionView.showMessage("Ничего не найдено по вашему запросу", type: .info)
+            searchCollectionView.showMessage(LocalizationKeys.Search.noResults.localized, type: .info)
 
         case .error(let error):
             searchCollectionView.stopLoading()

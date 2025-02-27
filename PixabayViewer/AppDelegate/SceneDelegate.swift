@@ -20,11 +20,18 @@ final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         window = UIWindow(windowScene: windowScene)
         
-        let navigationController = UINavigationController()
-        window?.rootViewController = navigationController
+        // Получаем координатор из DI контейнера
+        guard let coordinator = DIContainer.shared.resolve(type: SearchCoordinator.self) else {
+            fatalError("SearchCoordinator не зарегистрирован в DI контейнере")
+        }
         
-        coordinator = PixabaySearchCoordinator(navigationController: navigationController)
-        coordinator?.start()
+        self.coordinator = coordinator
+        
+        // Устанавливаем окно для навигационного контроллера
+        window?.rootViewController = coordinator.navigationController
+        
+        // Запускаем начальный флоу
+        coordinator.start()
         
         window?.makeKeyAndVisible()
     }
